@@ -13,8 +13,8 @@ async function analyzeRepo(req, res) {
   }
 
   const parsed = parseRepoUrl(repoUrl);
-  if (!parsed) {
-    return res.status(400).json({ error: 'Could not parse a GitHub owner/repo from that input' });
+  if (parsed.error) {
+    return res.status(400).json({ error: parsed.error });
   }
 
   try {

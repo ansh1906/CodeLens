@@ -22,12 +22,12 @@ function parseRepoUrl(input) {
   }
   try {
     const url = new URL(trimmed);
-    if (!url.hostname.includes("github.com")) return null;
+    if (!url.hostname.includes("github.com")) return { error: "Not a GitHub URL" };
     const parts = url.pathname.split("/").filter(Boolean);
-    if (parts.length < 2) return null;
+    if (parts.length < 2) return { error: "Invalid GitHub URL" };
     return { owner: parts[0], repo: parts[1] };
   } catch {
-    return null;
+    return { error: "Invalid GitHub URL" };
   }
 }
 
