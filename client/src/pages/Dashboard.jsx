@@ -7,7 +7,7 @@ import { analyzeRepo } from "../api/api.js";
 import Strands from "../components/Strands.jsx";
 
 function Dashboard() {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
 
@@ -40,8 +40,8 @@ function Dashboard() {
             <RepoForm onSubmit={handleSubmit} loading={loading} />
           </div>
 
-          <div className="relative mx-auto mb-6 flex min-h-100 w-full max-w-3xl flex-col items-center justify-between overflow-hidden rounded-2xl border-2 border-dashed border-gray-400 px-6 py-8">
-            {loading && (
+          {loading && (
+            <div className="relative mx-auto mb-6 flex min-h-100 w-full max-w-3xl flex-col items-center justify-between overflow-hidden rounded-2xl border-2 border-dashed border-gray-400 px-6 py-8">
               <div className="pointer-events-none absolute inset-0 z-0 animate-fade-in">
                 <Strands
                   colors={["#F97316", "#7C3AED", "#06B6D4"]}
@@ -59,14 +59,12 @@ function Dashboard() {
                   scale={2.5}
                 />
               </div>
-            )}
 
-            {loading && (
               <div className="relative z-10 shrink-0">
                 <ProgressBar label="fetching tree · filtering files · running review model…" />
               </div>
-            )}
-          </div>
+            </div>
+          )}
           {error && (
             <div className="mx-auto mb-8 w-full max-w-3xl rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-center text-base text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">
               <span className="mr-1.5 font-semibold uppercase">error</span> {error}
