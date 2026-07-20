@@ -1,23 +1,20 @@
-import { Router } from "express";
-import { parseRepoUrl, getRepoInfo, getRepoTree, getFileContent } from "../services/github.js";
-import { selectFilesForReview, chunkContent } from "../services/fileFilter.js";
-import { reviewFileWithGroq } from "../services/groq.js";
-import { aggregateReport } from "../services/aggregate.js";
-
-export const analyzeRouter = Router();
+const { parseRepoUrl, getRepoInfo, getRepoTree, getFileContent } = require('../services/github');
+const { selectFilesForReview, chunkContent } = require('../services/fileFilter');
+const { reviewFileWithGroq } = require('../services/groq');
+const { aggregateReport } = require('../services/aggregate');
 
 const MAX_FILES = Number(process.env.MAX_FILES || 25);
 const MAX_FILE_CHARS = Number(process.env.MAX_FILE_CHARS || 12000);
 
-analyzeRouter.post("/analyze", async (req, res) => {
+async function analyzeRepo(req, res) {
   const { repoUrl } = req.body ?? {};
-  if (!repoUrl || typeof repoUrl !== "string") {
-    return res.status(400).json({ error: "repoUrl is required" });
+  if (!repoUrl || typeof repoUrl !== 'string') {
+    return res.status(400).json({ error: 'repoUrl is required' });
   }
 
   const parsed = parseRepoUrl(repoUrl);
   if (!parsed) {
-    return res.status(400).json({ error: "Could not parse a GitHub owner/repo from that input" });
+    return res.status(400).json({ error: 'Could not parse a GitHub owner/repo from that input' });
   }
 
   try {
@@ -32,7 +29,7 @@ analyzeRouter.post("/analyze", async (req, res) => {
         branch,
         files: [],
         report: aggregateReport([]),
-        message: "No reviewable source files were found (after filtering vendored/binary/lock files).",
+        message: 'No reviewable source files were found (after filtering vendored/binary/lock files).',
       });
     }
 
@@ -51,8 +48,7 @@ analyzeRouter.post("/analyze", async (req, res) => {
         const review = await reviewFileWithGroq(entry.path, chunks[0]);
         fileReviews.push({ path: entry.path, ...review });
       } else {
-        // Merge chunked reviews back into one file-level result.
-        const merged = { summary: "", score: 0, findings: [] };
+        const merged = { summary: '', score: 0, findings: [] };
         for (let i = 0; i < chunks.length; i++) {
           const chunkReview = await reviewFileWithGroq(entry.path, chunks[i], { index: i, total: chunks.length });
           merged.findings.push(...chunkReview.findings);
@@ -77,4 +73,8 @@ analyzeRouter.post("/analyze", async (req, res) => {
     const status = err.status && err.status < 500 ? err.status : 500;
     res.status(status).json({ error: err.message });
   }
-});
+}
+
+module.exports = {
+  analyzeRepo,
+};

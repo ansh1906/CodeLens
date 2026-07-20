@@ -44,7 +44,7 @@ function safeParseJson(text) {
 }
 
 /** Sends one file (or chunk) to the Groq-hosted model and returns parsed findings. */
-export async function reviewFileWithGroq(filePath, content, chunkInfo = null) {
+async function reviewFileWithGroq(filePath, content, chunkInfo = null) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     throw new Error("GROQ_API_KEY is not set on the server");
@@ -84,3 +84,7 @@ export async function reviewFileWithGroq(filePath, content, chunkInfo = null) {
   }
   return parsed;
 }
+
+module.exports = {
+  reviewFileWithGroq,
+};

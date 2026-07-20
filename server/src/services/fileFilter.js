@@ -32,7 +32,7 @@ function isIgnored(path) {
  * Filters the raw GitHub tree down to a bounded, representative set of
  * source files worth sending to the model.
  */
-export function selectFilesForReview(tree, maxFiles) {
+function selectFilesForReview(tree, maxFiles) {
   const candidates = tree.filter((entry) => {
     if (isIgnored(entry.path)) return false;
     if (!CODE_EXTENSIONS.has(extensionOf(entry.path))) return false;
@@ -52,12 +52,11 @@ export function selectFilesForReview(tree, maxFiles) {
 
   return candidates.slice(0, maxFiles);
 }
-
 /**
  * Splits file content into chunks under maxChars, breaking on line
  * boundaries so a chunk never cuts a line in half.
  */
-export function chunkContent(content, maxChars) {
+function chunkContent(content, maxChars) {
   if (content.length <= maxChars) return [content];
   const lines = content.split("\n");
   const chunks = [];
@@ -73,3 +72,8 @@ export function chunkContent(content, maxChars) {
   if (current) chunks.push(current);
   return chunks;
 }
+
+module.exports = {
+  selectFilesForReview,
+  chunkContent,
+};

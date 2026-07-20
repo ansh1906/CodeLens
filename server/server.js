@@ -1,6 +1,6 @@
-const {express} = require('express');
+const express = require('express');
 const connectDB = require('./src/config/db');
-const app = require('./src/app')
+const app = require('./src/app');
 connectDB();
 
 app.listen(3000, () => {

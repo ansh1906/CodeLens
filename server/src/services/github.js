@@ -13,7 +13,7 @@ function authHeaders() {
 }
 
 /** Parses a GitHub URL (or "owner/repo") into { owner, repo }. */
-export function parseRepoUrl(input) {
+function parseRepoUrl(input) {
   const trimmed = input.trim().replace(/\.git$/, "");
   const shorthand = /^[\w.-]+\/[\w.-]+$/;
   if (shorthand.test(trimmed)) {
@@ -43,12 +43,12 @@ async function ghFetch(path) {
 }
 
 /** Fetches repo metadata, mainly to discover the default branch. */
-export async function getRepoInfo(owner, repo) {
+async function getRepoInfo(owner, repo) {
   return ghFetch(`/repos/${owner}/${repo}`);
 }
 
 /** Recursively fetches the full file tree for the default branch. */
-export async function getRepoTree(owner, repo, branch) {
+async function getRepoTree(owner, repo, branch) {
   const data = await ghFetch(`/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
   if (data.truncated) {
     console.warn(`Tree for ${owner}/${repo} was truncated by the GitHub API`);
@@ -57,7 +57,7 @@ export async function getRepoTree(owner, repo, branch) {
 }
 
 /** Fetches raw text content of a single file via the contents API. */
-export async function getFileContent(owner, repo, path, branch) {
+async function getFileContent(owner, repo, path, branch) {
   const data = await ghFetch(
     `/repos/${owner}/${repo}/contents/${encodeURI(path)}?ref=${encodeURIComponent(branch)}`
   );
@@ -66,3 +66,10 @@ export async function getFileContent(owner, repo, path, branch) {
   }
   return "";
 }
+
+module.exports = {
+  parseRepoUrl,
+  getRepoInfo,
+  getRepoTree,
+  getFileContent,
+};

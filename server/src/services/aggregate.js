@@ -5,7 +5,7 @@ const SEVERITY_WEIGHT = { low: 1, medium: 3, high: 6, critical: 10 };
  * totals by category/severity, an overall score, and the highest-signal
  * findings across the whole repo.
  */
-export function aggregateReport(fileReviews) {
+function aggregateReport(fileReviews) {
   const totals = { bug: 0, security: 0, quality: 0 };
   const bySeverity = { low: 0, medium: 0, high: 0, critical: 0 };
   let weightedSum = 0;
@@ -45,3 +45,7 @@ export function aggregateReport(fileReviews) {
     topFindings,
   };
 }
+
+module.exports = {
+  aggregateReport,
+};
