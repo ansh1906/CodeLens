@@ -11,7 +11,7 @@ async function registerUser(req, res) {
             email,
             password,
         } = req.body;
-
+        console.log("Saving OTP for:", email);
         const userExists = await userModel.findOne({ email });
         if (userExists) {
             return res.status(409).json({
@@ -54,7 +54,6 @@ async function registerUser(req, res) {
 async function verifyOTP(req, res) {
     try {
         const { email, otp } = req.body;
-
         const otpRecord = await OTPModel.findOne({ email });
 
         if (!otpRecord) {
@@ -108,8 +107,40 @@ async function verifyOTP(req, res) {
     }
 }
 
+async function resendOTP(req, res) {
+    try {
+        const { email } = req.body;
+
+        const otpRecord = await OTPModel.findOne({ email });
+
+        if (!otpRecord) {
+            return res.status(404).json({
+                message: 'No pending registration found.'
+            });
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        otpRecord.otp = otp;
+        otpRecord.expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+        await otpRecord.save();
+
+        await sendOTPEmail(email, otp);
+
+        return res.status(200).json({
+            message: 'OTP resent successfully.'
+        });
+    } catch (err) {
+        console.error('RESEND OTP ERROR:', err);
+        return res.status(500).json({
+            message: err.message
+        });
+    }
+}
+
 async function loginUser(req, res) {
     try {
+        
         const { email, password } = req.body;
 
         const user = await userModel.findOne({ email });
@@ -184,6 +215,7 @@ const getCurrentUser = async (req, res) => {
 module.exports = {
     registerUser,
     verifyOTP,
+    resendOTP,
     loginUser,
     logoutUser,
     getCurrentUser

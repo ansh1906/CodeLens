@@ -3,13 +3,15 @@ import RepoForm from "../components/RepoForm.jsx";
 import ProgressBar from "../components/ProgressBar.jsx";
 import SummaryPanel from "../components/SummaryPanel.jsx";
 import FileFindings from "../components/FileFindings.jsx";
-import { analyzeRepo } from "../api/api.js";
+import { analyzeRepo } from "../services/repoService.js";
 import Strands from "../components/Strands.jsx";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
+    const navigate = useNavigate();
 
     async function handleSubmit(repoUrl) {
         setLoading(true);

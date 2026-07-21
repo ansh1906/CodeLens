@@ -9,11 +9,8 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendOTPEmail(email, otp) {
-    console.log('EMAIL_USER:', process.env.EMAIL_USER);
 
     console.log('Sending OTP to:', email);
-
-    console.log('OTP:', otp);
     await transporter.sendMail({
         from: `"CodeLens" <${process.env.EMAIL_USER}>`,
         to: email,
